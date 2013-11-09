@@ -1,0 +1,197 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+
+        "http://www.w3.org/TR/html4/loose.dtd">
+
+
+
+<html lang="en">
+
+
+
+<head>
+
+
+<script type="text/javascript" src="shCore.js"></script>
+<script type="text/javascript" src="shBrushJScript.js"></script>
+<link href="shCore.css" rel="stylesheet" type="text/css" />
+<link href="shThemeDefault.css" rel="stylesheet" type="text/css" />
+
+
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+	<title>Google launcher tutorial</title>
+<style type="text/css">
+p{font-family: arial;
+font-size: 16pt;}
+
+h1{font-size: 26pt;
+text-align: center;}
+
+</style>
+
+
+</head>
+
+
+
+<body>
+<h1>Google Launcher Tutorial</h1>
+<br/>
+<p>Google's new design has rolled out in the past few mouths, and features an app launcher that replaces their ubiquitous black bar across most of their core services. In this tutorial I am going to teach you how to create a similar launcher.  I have not taken any of Google's code, but have instead reverse engineered it's behavior. My solution is light weight and relies on no libraries.</p>
+<p>Here is the link to my <a target="_top" href="menu.html">example</a></p>
+<br/>
+<p>First we need to set up the JavaScript to show and hide the launcher. The launcher starts with visibility:hidden;. Clicking on the icon triggers it to become visible. Clicking on the icon, or elsewhere on the page while it is visible causes it to become hidden again. The childOf function checks if the clicked element is a child of the popup element in order to correctly handle what action needs to be taken.</p>
+<script type="syntaxhighlighter" class="brush: js"><![CDATA[
+
+ var popup = document.getElementById('popup')
+ var menu = document.getElementById('menu')
+menu.addEventListener("click", trigger) //adding event for clicks on launcher icon
+
+        function trigger() { //function handles bringing launcher up and down
+
+            if (up == false) {
+                popup.style.overflow = "hidden";
+                more.style.height = "40px";
+                container.style.visibility = 'visible';
+                more.style.fontSize = "12pt"
+                popup.scrollTop = 0;
+
+
+                top = true;
+
+                up = true;
+            } else if (up == true) {
+
+                container.style.visibility = 'hidden';
+                up = false;
+
+
+            }
+
+        }
+function childOf(c, p) { // function detects if element is a child of another
+        while ((c = c.parentNode) && c !== p);
+        return !!c
+    }
+
+
+    window.addEventListener('click', function(e) { // handles click outside of launcher in order to hide it
+        eTarget = e.target
+        if (childOf(eTarget, popup) != true && eTarget != menu) {
+            up = true;
+            trigger();
+
+        }
+    })
+
+
+}
+
+
+]]></script>
+<br/>
+<p>The most difficult part of creating the launcher are the scroll events and the effect they have on the launcher window. Initially the launcher will have over-scroll: hidden;. When it detects a downward scroll event this is changed to overscroll: scroll;.  The following peaces of code create the listeners and the functions that handle them.</p>
+
+
+
+<script type="text/javascript">SyntaxHighlighter.all()</script>
+<script type="syntaxhighlighter" class="brush: js"><![CDATA[
+//changes event type depending on browser
+ var wheelevt = (/Firefox/i.test(navigator.userAgent)) ? "DOMMouseScroll" : "mousewheel"  
+
+ // boolean stating if launcher window is scrolled to top
+ var top = true; 
+ var more = document.getElementById('more')//button that displays additional icon when clicked
+ if (popup.attachEvent) { //if IE (and Opera depending on user setting)
+        popup.attachEvent("on" + wheelevt, scrollView)
+    } else if (popup.addEventListener) { //WC3 browsers
+        document.addEventListener(wheelevt, scrollView, false)
+    };
+
+// function that handles mouse wheel and scroll gestures
+    function scrollView() { 
+
+
+        if (popup.scrollTop == 0 && top == true) {
+
+            popup.style.overflow = "scroll";
+
+        }
+        if (popup.scrollTop > 1 && top == true) {
+            more.style.height = "2px";
+            more.style.fontSize = "0pt"
+            top = false;
+
+
+
+
+        }
+
+    }
+
+//handles scroll events on popup element
+ popup.onscroll = function() {
+
+
+        if (popup.scrollTop == 0 && top == false) {
+
+            more.style.height = "40px";
+            more.style.fontSize = "12pt"
+            popup.style.overflow = "hidden";
+            top = true;
+            
+
+        }
+    }
+]]></script>
+<br/>
+<p>lastly we need to scroll to bottom of page when the "more" div is clicked on.  I decided to use a non jQuery solution, but you can use jQuery's animations instead.</p>
+<script type="syntaxhighlighter" class="brush: js"><![CDATA[more.addEventListener('click', function() {
+        popup.style.overflow = "scroll";
+        more.style.height = "2px";
+        more.style.fontSize = "0pt"
+        top = false;
+
+        scrollTo(popup, space.offsetTop, 400)// triggers animated scroll to bottom of launcher
+
+
+
+    })
+
+//function acheves animated scrolling without jquery
+    function scrollTo(element, to, duration) { 
+        var start = element.scrollTop,
+            change = to - start,
+            currentTime = 0,
+            increment = 20;
+
+        var animateScroll = function() {
+            currentTime += increment;
+            var val = Math.easeInOutQuad(currentTime, start, change, duration);
+            element.scrollTop = val;
+            if (currentTime < duration) {
+                setTimeout(animateScroll, increment);
+            }
+        };
+        animateScroll();
+    }
+
+//adds ease in animation to scrollTo function
+    Math.easeInOutQuad = function(t, b, c, d) { 
+        t /= d / 2;
+        if (t < 1) return c / 2 * t * t + b;
+        t--;
+        return -c / 2 * (t * (t - 2) - 1) + b;
+    };
+
+]]></script>
+<p>Have a look at the <a target="_top" href="menu.html">example</a> for the HTML and CSS you will need along with the full JavaScript. </p>
+
+
+</body>
+
+
+
+</html>
+
+
