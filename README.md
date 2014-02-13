@@ -1,5 +1,3 @@
-App-launcher == Google style app launcher
-
 App launcher is an app/link laucher, similar to what is seen in google's recent redesign.  
 
 The javaScript is designed to be fast and light.  No frameworks are used, and it is cross browser compatible.  
