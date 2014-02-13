@@ -4,7 +4,7 @@ The javaScript is designed to be fast and light.  No frameworks are used, and it
 
 Instructions are included in the docs folder.  
 
-Also can be viewed @ http://shidel.com/#gLauncher.
+Also can be viewed at http://shidel.com/#launcher
 
 Enjoy!
 
